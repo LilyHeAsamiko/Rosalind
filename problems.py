@@ -444,4 +444,204 @@ def MendelSecondIA(k,N):
     return 1-sum(p)
 print(MendelSecondIA(7,36))
 
+#Finding a Protein Motif
+#A component of a domain essential for its function is called a motif, a term that in general has the same meaning as it does in nucleic acids, although many other terms are also used (blocks, signatures, fingerprints, etc.) Usually protein motifs are evolutionarily conservative, meaning that they appear without much change in different species.
+#https://rosalind.info/problems/mprt/
+#To allow for the presence of its varying forms, a protein motif is represented by a shorthand as follows: [XY] means "either X or Y" and {X} means "any amino acid except X." For example, the N-glycosylation motif is written as N{P}[ST]{P}.
+#!!!!!!Notice: extra spaces at end of line will not be passed
 
+#input = r"E:\Rosalind\BSZC00.fasta.txt"
+#input = r"E:\Rosalind\P07204.fasta.txt"
+import requests
+#input = r"E:\Rosalind\Rosalind_t5.txt"
+input = r"C:\Users\Admin\Downloads\rosalind_mprt.txt"
+
+rf = []
+with open(input,'r') as f:
+    rf = f.readlines()
+downloadList = []
+names = []
+for s in rf:
+    names.append(s[0:s.index('\n')])
+    if '_' in s:
+        downloadList.append(''.join(s[0:s.index('_')]))
+    else:
+        downloadList.append(''.join(s[0:s.index('\n')]))
+
+localDir = 'E:\Rosalind\\'
+header = {"User-Agent":"Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.25 Safari/537.36 Core/1.70.3861.400 QQBrowser/10.7.4313.400"}
+for urls in downloadList:
+    req = requests.get(url ='https://rest.uniprot.org/uniprotkb/'+urls+'.fasta',headers=header)    
+    req.encoding = 'gbk'
+    html = req.text
+    with open(localDir+urls+'.txt','w') as file:
+        file.write(html) 
+
+tmpProtein = []
+for urls in downloadList:
+    with open(localDir+urls+'.txt','r') as f:
+        rfs=f.readlines()
+    tmp=[]
+    for lines in rfs:
+        if '>' not in lines:
+            tmp.append(''.join(lines[0:lines.index('\n')]))
+    tmpProtein.append(''.join(tmp))
+output = []
+IDs = []
+#answ = [[85,118,142,306,395],[47,115,116,382,409],[79,109,135,248,306,358,364,402,485,501,614]]
+for i in range(len(tmpProtein)):
+    if tmpProtein[i].find('N') >=0:
+        tmp = []
+        for j in range(len(tmpProtein[i])-3):    
+            if tmpProtein[i][j] == 'N'  and tmpProtein[i][j+1] != 'P' and (tmpProtein[i][j+2] == 'S' or tmpProtein[i][j+2] == 'T') and tmpProtein[i][j+3] != 'P':
+                tmp.append(j+1)
+        if len(tmp)>0:
+            IDs.append(downloadList[i])
+            output.append(' '.join([str(s) for s in tmp]))
+#            print('Difference to Answer and surrounding:')
+            print(names[i])
+#            [print(s) for s in tmp]
+            print(' '.join([str(s) for s in tmp]))
+#                print('Answ: ',answ[i-1])
+#                print('Mine: ',tmp)
+#                [print('Included: ',tmpProtein[i][k-2],tmpProtein[i][k-1],tmpProtein[i][k],tmpProtein[i][k+1]) for k in range(len(tmp)) if k in answ[i-1]]
+#                [print('Excluded: ',tmpProtein[i][k-2],tmpProtein[i][k-1],tmpProtein[i][k],tmpProtein[i][k+1]) for k in range(len(tmp)) if k not in answ[i-1]]
+print(output)
+print(answ)        
+
+#Inferring mRNA from Protein
+import pandas as pd
+import numpy as np
+def RCSVF(File):
+    '''Read a csv file and output its content as a dictionary.Odd columns as keys while even columns as values.'''
+    dat= pd.read_csv(File,header = None)
+    codon = []
+    amino = []
+    dictD = {}
+    for c in range(np.shape(dat)[1]):
+        if c % 2 == 0:
+            codon.append(dat.iloc[:,c])
+        else:
+            amino.append(dat.iloc[:,c])
+            for r in range(np.shape(dat)[0]):
+                dictD[str(dat.iloc[r,c-1])] = str(dat.iloc[r,c])
+    return dictD
+inputTAB =r"E:\extdata\DNA codon Std table.csv"
+dictCodon = RCSVF(inputTAB)
+string = 'MVWVPVMKVWNEWYQAIVKEVPRATHNFYIRGIDKQGTYSWLQKAPQCLTTRQQPGFNGKNRTAMPHRDGQQNIFQWELQNLCCTEMMAIVIHGFWGWFMMMWNWCEIAGWDYRQISCPQFNLGVHKNWNDGWCNMPYTHTDQPQLVFVKLTEVEYMHQREIFSMWEIDEERWLWRVYEHMMFYKWMPQKWSLCMQDSSYKMCHNGEYAEEHHWCHNAMVCECMYNPDQLMYSNPIRECNLMGNSKYNSIHHSSSLIPSFDDTDRNWVRKSLWWDQLTWFLYDCHRQLFSCNNGHSAQFMFFPNPSQPFNCHASILYRAPMNLEKYAKKTRVMVYFCVPVPFCFRHDQHVRYRQKCKWETDAHHFIDLVQRTHWDKIRPPCELPVWNMRFEPYMPQENTGSQIPMRRWGAREFHFAHFYYKNEVTIKCTGMFVRAAMCWNQICSRSFSKHMHWKKCAVSNAWMWREYKGVHSKRDASKYWKVWMFKKHVHTQGCTTKPRQYWTMYYIRCARDHHHFGPHYDEENPNAWEGIHIKAWVREFHAWIWCMTSCGAVYQNIYMRNKEACNIQEVPEWNHHIHSQYNMSYTANPFKITWGAYQLPKVAVPSDEIFNKAHKTAQPKWCTIICSFYIHAPLSASSEWEPTKEYWPMRWGDEACILGDVPVMAHFVEWSHQLQMGANYFYIHKPIDMFFVGWEWQYSFVRNVITFTEDKKPDHLVNRVIKPDMFSPNNIEMAKSDNPPEFFPIMCHQRIDMSRGRKEKESNTKVAGQTDTSWGIPLLEHGNAEHRAAKPHEERTATTSCLDQWAISVFMNMYEYRQGKKLQAVAAVPVDSMLDPKKWSWIIGPLWKDKHPPDIEQRQCPEMMLTVRECNARHYRGCIEIMATWRNQTFLWKECEKFMFVSDKLGAMNYPRNMCWVSMLCIVCTSYSQFGYFATCIWNNPFHNVYSFCHFPRMFKERASISHNKSAASCLDTYKSHWEMIRSGLEGRFAWYRGVDHML'
+outputN = 1
+for s in string:
+    outputN *= list(dictCodon.values()).count(s) 
+outputN *=  list(dictCodon.values()).count('*')
+print(np.mod(outputN,1000000))
+
+#Open Reading Frames
+#Notice the one passed is method3 which basically searches on DNA level instead of interval of three to translate to amino acids first. 
+import pandas as pd
+import numpy as np
+string = 'AGCCATGTAGCTAACTCAGGTTACATGGGGATGACCCCGCGACTTGGATTAGAGTCTCTTTTGGAATAAGCCTGAATGATCCGAGTAGCATCTCAG'
+def RCSVF(File):
+    '''Read a csv file and output its content as a dictionary.Odd columns as keys while even columns as values.'''
+    dat= pd.read_csv(File,header = None)
+    codon = []
+    amino = []
+    dictD = {}
+    for c in range(np.shape(dat)[1]):
+        if c % 2 == 0:
+            codon.append(dat.iloc[:,c])
+        else:
+            amino.append(dat.iloc[:,c])
+            for r in range(np.shape(dat)[0]):
+                dictD[str(dat.iloc[r,c-1])] = str(dat.iloc[r,c])
+    return dictD
+
+inputTAB =r"E:\extdata\DNA codon Std table.csv"
+dictCodon = RCSVF(inputTAB)
+RC = {'A':'T','T':'A','C':'G','G':'C'}
+inputf = r"C:\Users\Admin\Downloads\rosalind_orf.txt"
+with open(inputf,'r') as f:
+    rf = f.readlines()
+string = ''.join(rf[1:]).replace('\n','')
+if np.mod(len(string),3) >0:
+    string = string[0:len(string)-np.mod(len(string),3)]
+def ORFF(string,startP,endP):
+    ORFP = []
+    tmpORF = []
+    for i in range(startP,endP-3,3):
+        if dictCodon[string[i:i+3]] == 'M' and tmpORF == []:
+            tmpORF.append(dictCodon[string[i:i+3]])
+        if dictCodon[string[i:i+3]] != 'M' and dictCodon[string[i:i+3]] != '*' and tmpORF != []:
+            tmpORF.append(dictCodon[string[i:i+3]])
+#        if dictCodon[string[i:i+3]] == 'M' and tmpORF != []:
+#            tmpORF=[]
+#            tmpORF.append(dictCodon[string[i:i+3]])
+        if dictCodon[string[i:i+3]] == '*' and tmpORF != []:
+            ORFP.append(''.join(tmpORF))
+            tmpORF=[]
+ #       if i == endP-1 and tmpOEF != []:
+ #           tmpORF = []
+    return ORFP
+print(ORFF(string,0,len(string)))
+print(ORFF(string,1,len(string)-2))
+print(ORFF(string,2,len(string)-1))
+print(ORFF(''.join([RC[s] for s in string[::-1]]),0,len(string)))
+print(ORFF(''.join([RC[s] for s in string[::-1]]),1,len(string)-2))
+print(ORFF(''.join([RC[s] for s in string[::-1]]),2,len(string)-1))
+
+#method2
+def ORFF2(seq):
+    try:
+        stti = seq.index('M')
+        stpi = seq.index('*')
+        if stti < stpi:
+            print(''.join(seq[stti:stpi]))
+#            print(ps)
+            ORFF2(seq[stpi+1:])
+        if stti > stpi:
+            ORFF2(seq[stti:])
+    except:
+        return ''
+AA1=''.join([dictCodon[string[i:i+3]] for i in range(0,len(string)-3,3)])
+AA2=''.join([dictCodon[string[i:i+3]] for i in range(1,len(string)-3-2,3)])
+AA3=''.join([dictCodon[string[i:i+3]] for i in range(2,len(string)-3-1,3)])
+AA4=''.join([dictCodon[''.join([RC[s] for s in string[::-1]])[i:i+3]] for i in range(0,len(string)-3,3)])
+AA5=''.join([dictCodon[''.join([RC[s] for s in string[::-1]])[i:i+3]] for i in range(1,len(string)-3-2,3)])
+AA6=''.join([dictCodon[''.join([RC[s] for s in string[::-1]])[i:i+3]] for i in range(2,len(string)-3-1,3)])
+
+ORFF2(AA1)
+ORFF2(AA2)
+ORFF2(AA3)
+ORFF2(AA4)
+ORFF2(AA5)
+ORFF2(AA6)
+
+#method3
+def ORFF3(seq):
+    pSeq = []
+    for i in range(len(seq)-3):
+        if dictCodon[seq[i:i+3]]=='M':
+            tmpSeq = [dictCodon[seq[ii:ii+3]] for ii in range(i,len(seq)-3,3)]
+            try:
+                tmpk = ''.join(tmpSeq).index('*')
+                pSeq.append(''.join(tmpSeq[0:tmpk]))
+            except:
+                print('End of searching')
+                break
+    return pSeq
+
+O3 = ORFF3(string)
+O3RC = ORFF3(''.join([RC[s] for s in string[::-1]]))
+[print(s) for s in set(O3).union(set(O3RC))]
+#Enumerating Gene Orders
+import itertools
+import math
+n = 7
+#[print(p) for p in list(itertools.permutations(range(1,n+1)))]
+print(math.perm(n))
+L = []
+for i in list(itertools.permutations(range(1,n+1))):
+    tmp = []
+    for ii in i:
+        tmp.append(str(ii))
+    print(' '.join(tmp))
+    L.append(' '.join(tmp))
