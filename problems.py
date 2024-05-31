@@ -718,3 +718,77 @@ for i in range(len(string)):
         if string[i:i+j]==''.join([TblDNA[s] for s in string[i:i+j]][::-1]) and i+j<=len(string):
             print(i+1,j,sep = '\t')
             
+#RNA Splicing
+#Genes are Discontiguousclick to expand;  Problem:After identifying the exons and introns of an RNA string, we only need to delete the introns and concatenate the exons to form a new string ready for translation.
+import pandas as pd
+import numpy as np
+def RCSVF(File):
+    '''Read a csv file and output its content as a dictionary.Odd columns as keys while even columns as values.'''
+    dat= pd.read_csv(File,header = None)
+    codon = []
+    amino = []
+    dictD = {}
+    for c in range(np.shape(dat)[1]):
+        if c % 2 == 0:
+            codon.append(dat.iloc[:,c])
+        else:
+            amino.append(dat.iloc[:,c])
+            for r in range(np.shape(dat)[0]):
+                dictD[str(dat.iloc[r,c-1])] = str(dat.iloc[r,c])
+    return dictD
+inputTAB =r"E:\extdata\DNA codon Std table.csv"
+dictCodon = RCSVF(inputTAB)
+inputf = r"E:\Rosalind\Rosalind_t6.txt"
+inputf = r"C:\Users\Admin\Downloads\rosalind_splc.txt"
+with open(inputf,'r') as f:
+    rf = f.readlines()
+exons = []
+introns = []
+i = 1
+while i <len(rf):
+    if '>' not in rf[i] and len(introns)==0: 
+        exons.append(rf[i].replace('\n',''))
+        i += 1 
+    elif '>' in rf[i]:
+        temp = rf[i+1].replace('\n','')
+        for j in range(i+2,len(rf)):
+            if '>' not in rf[j]:
+                temp += rf[j].replace('\n','')
+            else:
+                introns.append(temp)
+                i = j
+                temp = ''
+        if j == len(rf) - 1 or i == len(rf) - 2:
+            introns.append(temp)
+            break
+
+                
+Exons = ''.join(exons).replace('\n','')
+#introns = sorted(introns, reverse=True)
+def delete_introns(exons, introns):
+    newexons = ''
+    for s in introns:
+        if exons.find(s)>0:
+            print(len(exons),s,"found............")
+            newexons = exons.replace(s,'')
+            exons = newexons
+            print(len(exons))
+        else:
+            print(len(exons),s," not found-----------")
+            newexons = exons
+    return newexons
+old_exons = Exons
+newExons = delete_introns(old_exons, introns)
+len(newExons)
+len(delete_introns(newExons, introns))    
+    
+protein = []
+if np.mod(len(newExons),3) >0:
+    newExons = newExons[0:len(newExons)-np.mod(len(newExons),3)]
+for i in range(0,len(newExons),3):
+    if dictCodon[newExons[i:i+3]] == '*':
+        break
+    else:
+        protein.append(dictCodon[newExons[i:i+3]])
+print(''.join(protein))
+        
