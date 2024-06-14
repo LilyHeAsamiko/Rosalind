@@ -791,4 +791,48 @@ for i in range(0,len(newExons),3):
     else:
         protein.append(dictCodon[newExons[i:i+3]])
 print(''.join(protein))
-        
+
+#        Enumerating k-mers Lexicographically
+#len(letters)**level
+string = 'A B C D E '
+levels = 4
+letters = sorted(string.replace(' ',''))
+#m1
+orderedS = []
+def orderS(letter,lev):
+    D = ''.join(letter)
+    for i in range(len(letter)):        
+        D.replace(letter[i],letter[i]*(len(letter)**lev))
+        print(D,letter[i],'replaced with',letter[i]*(len(letter)**lev))
+    print('D After replace is',D, lev,'as in lev')
+    return D            
+
+for level in range(levels):
+    print('letters',letters)
+    print('unilen',len(letters),'1stdigit',letters[0])
+#    print(orderS(letters,level,np.array(digits)))
+#    orderedS.append(''.join(orderS(letters,level,np.array(digits,dtype = str))*len(letters)))
+    orderedS.append(orderS(letters,levels-1-level)*(len(letters)**level))
+    
+#np.transpose(np.array(orderedS,dtype = str))
+for i in range(len(orderedS[0])):
+    print(orderedS[0][i],orderedS[1][i])
+#m2
+llll= []
+for level in range(levels):
+    cstring = string
+#    print(cstring)
+    for l in letters:
+#        print(l,cstring.replace(l+' ',l*(len(letters)**(levels-1-level))))
+        cstring = cstring.replace(l+' ',l*(len(letters)**(levels-1-level)))
+#    print(level,cstring*((len(letters)**level)))
+    llll.append(cstring*(len(letters)**level))
+#np.transpose(np.array(llll,dtype = str))
+result = []
+for p in range(len(llll[0])):
+    temp = []
+    for q in range(levels): 
+#        print(llll[q][p],end='')
+        temp.append(llll[q][p])
+    result.append(''.join(temp))
+    print(result[-1])
