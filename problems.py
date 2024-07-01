@@ -1042,13 +1042,90 @@ for i in reversed(range(2, n+1)):
         if list(j) == sorted(j, reverse=True) and not bld:
             list_d.append(j)
             bld = True
+        prin
     if bli and bld:
         break
 
 print(' '.join(str(i)for i in list_a[0]))
 print(' '.join(str(i)for i in list_d[0]))
 
+#correction
+with open(r"C:\Users\Admin\Downloads\rosalind_lgis.txt",'r') as f:
+    FL = f.readlines()
+String = FL[1].replace('\n','').split(' ') 
+string = [int(s) for s in String]   
+n=len(string)
+
+def l_i_s(sequence):
+    if not sequence:
+        return []
+ 
+    lengths = [1] * len(sequence)
+    for i in range(1, len(sequence)):
+        for j in range(i):
+            if sequence[i] > sequence[j]:
+                lengths[i] = max(lengths[i], lengths[j] + 1)
+ 
+    max_length = max(lengths)
+    lis = []
+    for i in range(len(sequence) - 1, -1, -1):
+        if lengths[i] == max_length:
+            lis.append(sequence[i])
+            max_length -= 1
+ 
+    return lis[::-1]
+ 
+def l_d_s(sequence):
+    return l_i_s(sequence[::-1])
+ 
+#sample_sequence = list(map(int, combined_sequence.split()))
+ 
+lis = l_i_s(string)
+lds = l_d_s(string)
+ 
+print(' '.join(map(str, lis)))
+print(' '.join(map(str, lds[::-1])))
+
 #last try
+li = []
+ld = []
+lil = []
+ldl = []
+mintemp = 10000
+maxtemp = 0
+li.append(string[0])
+lil.append(1)
+ld.append(string[0])
+ldl.append(1)
+for i in range(1,len(string)):
+    litemp = []
+    litemp.append(string[i])
+    mintemp = string[i]
+    for j in range(i-1,0,-1):
+        if string[j] < mintemp:
+            mintemp = string[j]
+            litemp.append(mintemp)
+        print(i,j,li,lil)       
+    if len(litemp) >0:
+        li.append(len(litemp))
+        litemp = []
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 li = []
 ld = []
 lil = []
