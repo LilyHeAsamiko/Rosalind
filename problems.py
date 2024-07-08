@@ -1110,22 +1110,6 @@ for i in range(1,len(string)):
         li.append(len(litemp))
         litemp = []
     
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 li = []
 ld = []
 lil = []
@@ -1177,3 +1161,125 @@ def backtrack(b,s,n):
     return res[::-1] 
 
 print(lgis(r"C:\Users\Admin\Downloads\rosalind_lgis.txt"))
+
+#Genome Assembly as Shortest Superstring
+test = r"E:\Rosalind\Rosalind_tttt.txt"
+with open(r"C:\Users\Admin\Downloads\rosalind_long.txt",'r') as f:
+    rfs=f.readlines()
+with open(test,'r') as f:
+    rfs=f.readlines()
+sequence = []
+tmp=[]
+for lines in rfs:
+    if '>' not in lines:
+        #tmp.append(''.join(lines[0:lines.index('\n')]))
+        print(lines.replace('\n',''))
+        if '\n' in lines:
+            tmp.append(lines.replace('\n',''))
+        else:
+            tmp.append(lines)
+    else:
+        if tmp:
+            print(''.join(tmp))
+            sequence.append(''.join(tmp))
+            tmp = []
+    if lines == rfs[-1]:
+        sequence.append(''.join(tmp))
+
+                       
+superstring = sequence[0]
+for s in sequence[1:]:
+    i = superstring.find(s[0])
+    if i <0:
+        superstring += s
+    else:
+        while i < len(superstring):
+            if len(superstring[i:])>= len(s):
+                if superstring[i:i+len(s)] == s:
+                    break
+                else:
+                    temp = superstring[i+1:].find(s[0])
+                    if temp <0:
+                        superstring += s
+                        break
+                    else:
+                        i += temp+1
+            else:
+                if superstring[i:] == s[0:len(superstring[i:])]:
+                    superstring += s[len(superstring[i:]):]
+                    break
+                else:
+                    temp = superstring[i+1:].find(s[0])
+                    if temp <0: 
+                        superstring += s
+                        break
+                    else:
+                        i += temp +1
+print(superstring)
+
+superstring = sequence[0]
+for s in sequence[1:]:
+    overlap = 0
+    i = superstring.find(s[0])
+    for sj in range(i,len(superstring)):
+        for si in range(1,len(s)+1):    
+            if superstring[sj:sj+si] == s[0:0+si] and si > overlap:
+                overlap = si
+            else:
+                break
+    if overlap ==0:
+        superstring += s
+    else:
+        if overlap < len(s):
+            superstring += s[overlap:]        
+print(superstring)
+
+
+import re 
+def gen_cf(m, n):
+    """该函数是用来计算 m序列尾部和 n序列头部重叠碱基个数
+    """
+    max_gen = 0
+    for j in range(len(m), 3, -1):
+        if m[-j:] == n[0:j]:
+            max_gen = j
+    return max_gen
+ 
+ 
+def order(m, n):
+    """该函数通过调用gen_cf函数，来判断 m序列尾部和n序列头部连接 还是
+    n序列尾部和 m序列头部连接,最后返回一个列表。列表包含序列之间连接的信息
+    还有重叠碱基数
+    """
+    order_1 = gen_cf(m, n)
+    order_2 = gen_cf(n, m)
+ 
+    if order_1 > order_2:
+        return [1, order_1]
+    else:
+        return [2, order_2]
+ 
+ 
+def add(m, n):
+    """
+    该函数通过调用order函数，将m n 连接起来
+    """
+    j = order(m, n)
+    if j[0] == 1:
+        return m + n[j[1]:]
+    else:
+        return n + m[j[1]:]
+ 
+ 
+gen_begin = sequence.pop(0)
+    # 
+while sequence:
+    l = []
+    for i in sequence:
+        l.append(order(gen_begin, i)[1])
+    print(l)  #
+    max_index = l.index(max(l))
+    n = sequence.pop(max_index)    #
+    gen_begin = add(gen_begin, n)        # 
+ 
+print(gen_begin)
