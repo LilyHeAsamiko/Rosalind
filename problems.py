@@ -7,7 +7,6 @@ Created on Fri Apr 19 17:08:30 2024
 from itertools import permutations
 from collections import Counter
 
-
 string = 'ATATGATACCTGTTTGACTATCTATGCTGACGTAGCTATTACAGCGCCACAACCGAACTGTGTGAGCCCTTGAAGGCATTCCGCAGAACCACCTCATTAAGATTGGGAATTGCAGTCACAGTTACGTGGCGGAACCACATGTGTACAAAACACATAGGGCCGTGGGGCCTGGTGGTCATTCTGTTGACGAGCTTTCGTTACAGCGAGCGGCCGGATAGGAGAGTCCTTTGGGCGACTATGCGCCGCAATACCTCCATTATCCCACCCGTAAGAGTTTCAAGTCGGACAACGAATGTATCGTTACTCTACGGGCGCGCCCCTATTCGTTAGATGTGGTAAACCAGGGTCCTCAACTACCGCGATTCCGCAACCTTCCCTGTATGATTGTGGAGGGAGACTTAGGGTAGGTTCCCCTCTGTAAGCCCGTGCCCCAATTAGTTATGTCACCCTCCTAATCAGACGGCTACTTATGTCGCTAAGTGCCCACTGTAAGAACGATGAAGAGCCACGGCAGTTGTTCTAAAGCGGGTTTTTTTATTTCACCCCCAGTAACTTCATGACCAACTCTTGTACGCCCCGCATGGCACACGTAGAAGCTCGTACCCCTCAAATTCAGCGTTAGATGGCTGATCAGCCCCACCCAGCTGAGCAGCCGCACCTCCATAAGGTCGGTTCCGCGTTCGTTCACTGCAACCTCTCGTAAAGGGAGGTGACCGGTTTCTATGCGGCAAATACTCTTGTAGATACGTAGAACGAAGGCTGCCGGTGCTACCTACCAAAGGCGATAATGTAAGCCACTACCGTACATAGACTGACAGGGGTTCTTTCTGTCCGGGGGAAGTTCTACATCAAAAAGCGCTCCAGGAGCAGAGTTGGTCTGATTAGCTACACGCTGCCCATACGGAATCATTGATCGATGTCGGCGGTCCGTCGTTCGATAGGAGCATCCCCATAGTCACTCATCTCCTTCGCGTTGAGCACACCACATCCCGAAT'
 print(str(dict(Counter(string))['A'])+' '+str(dict(Counter(string))['C'])+' '+str(dict(Counter(string))['G'])+' '+str(dict(Counter(string))['T']))
 
@@ -1283,3 +1282,46 @@ while sequence:
     gen_begin = add(gen_begin, n)        # 
  
 print(gen_begin)
+
+#Perfect Matchings and RNA Secondary Structures
+with open(r"C:\Users\Admin\Downloads\rosalind_pmch.txt",'r') as f:
+    FL = f.readlines()
+String = ''.join(FL[1:]).replace('\n','').split(' ')[0]
+string = [int(s) for s in String]   
+n=len(String)
+#for test
+String = 'AGCUAGUCAU'
+nA = String.count('A')
+nU = String.count('U')
+nC = String.count('C')
+nG = String.count('G')
+
+def factorial(N):
+    if N == 0 or N == 1:
+        return 1
+    elif N >1:
+        return N*factorial(N-1)
+
+if nA == nU and nC == nG:
+#perfect matching
+    print(factorial(nA)*factorial(nG))
+else:
+#maximal matching
+    if nA*nU*nC*nG == 0:
+        print(0)
+    else:
+        result = 1
+        minAU = min(nA,nU)
+        maxAU = max(nA,nU)
+        minCG = min(nC,nG)
+        maxCG = max(nC,nG)
+        while minAU > 0:
+            result *= maxAU
+            maxAU -= 1
+            minAU -= 1
+        while minCG > 0:
+            result *= maxCG
+            maxCG -= 1
+            minCG -= 1
+        print('1:',result)
+        print('2:',factorial(maxAU)/factorial(maxAU-minAU))
