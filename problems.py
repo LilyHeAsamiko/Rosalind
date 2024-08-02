@@ -1359,5 +1359,32 @@ def factorial(N):
 P = factorial(N)/factorial(N-k)
 print(np.mod(P,1000000))
 
+#Introduction to Random Strings 
+'''
+Modeling Random Genomesclick to collapse
+We already know that the genome is not just a random strand of nucleotides; recall from “Finding a Motif in DNA” that motifs recur commonly across individuals and species. If a DNA motif occurs in many different organisms, then chances are good that it serves an important function.
 
+At the same time, if you form a long enough DNA string, then you should theoretically be able to locate every possible short substring in the string. And genomes are very long; the human genome contains about 3.2 billion base pairs. As a result, when analyzing an unknown piece of DNA, we should try to ensure that a motif does not occur out of random chance.
 
+To conclude whether motifs are random or not, we need to quantify the likelihood of finding a given motif randomly. If a motif occurs randomly with high probability, then how can we really compare two organisms to begin with? In other words, all very short DNA strings will appear randomly in a genome, and very few long strings will appear; what is the critical motif length at which we can throw out random chance and conclude that a motif appears in a genome for a reason?
+
+In this problem, our first step toward understanding random occurrences of strings is to form a simple model for constructing genomes randomly. We will then apply this model to a somewhat simplified exercise: calculating the probability of a given motif occurring randomly at a fixed location in the genome.
+'''
+import numpy as np
+s ='ACGATACAA'
+p = [0.129, 0.287, 0.423, 0.476, 0.641, 0.742, 0.783]
+asw = [-5.737, -5.217, -5.263, -5.360, -5.958, -6.628, -7.009]
+
+#exam
+s = 'AGCTCGCAGTAGCTCGTGCCGGAATCTCTCACAAAGTTGGCCTATGCTACGGGATGCTCATATTTTACTACCCAGTATTGTGTCTGGT'
+p = [0.096,0.148,0.200,0.223,0.288,0.373,0.405,0.455,0.538,0.569,0.641,0.711,0.743,0.806,0.883,0.915]
+#method 1
+result = []
+for i in enumerate(p):
+    tp = 0
+    for si in s:
+        if si in ['A','T']:
+            tp +=  np.log10((1-p[i[0]])/2)
+        elif si in ['C','G']:
+            tp +=  np.log10(p[i[0]]/2)
+    result.append(round(tp,3))
