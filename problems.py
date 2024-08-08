@@ -1388,3 +1388,38 @@ for i in enumerate(p):
         elif si in ['C','G']:
             tp +=  np.log10(p[i[0]]/2)
     result.append(round(tp,3))
+
+#Enumerating Oriented Gene Orderings
+'''
+Problem
+A signed permutation of length n
+ is some ordering of the positive integers {1,2,…,n}
+ in which each integer is then provided with either a positive or negative sign (for the sake of simplicity, we omit the positive sign). For example, π=(5,−3,−2,1,4)
+ is a signed permutation of length 5
+.
+
+Given: A positive integer n≤6
+.
+
+Return: The total number of signed permutations of length n
+, followed by a list of all such permutations (you may list the signed permutations in any order).
+'''
+from  itertools import permutations
+import numpy as np
+def factorial(N):
+    if N == 0 or N == 1:
+        return 1
+    elif N >1:
+        return N*factorial(N-1)
+
+n = 4
+P = list(permutations(set([int(l) for l in np.linspace(-n,n,2*n+1)])-set([0]),n))
+result = []
+for item in P:
+#    print(item,len(set([abs(a) for a in item])),len(item))
+    if len(set([abs(a) for a in item])) == len(item):
+#        P.remove(item)
+        result.append(item)
+print(factorial(n)*2**n)
+for r in result:
+    print(r[0],r[1],r[2],r[3])
