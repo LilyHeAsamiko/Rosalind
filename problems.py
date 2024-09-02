@@ -1454,3 +1454,51 @@ if len(s1) == len(s2):
             if i[1] != s2[i[0]]:
                 print('error!',i,transitions[i[1]],transversions[i[1]],s2[i[0]])
     print(round(trst/trsv,11))
+    
+#Completing a Tree
+import numpy as np
+N = 10
+AdjL = [[1,2],[2,8],[4,10],[5,9],[6,10],[7,9]]
+# 1 2        8
+#      4      10 6
+#       5 9 7 
+#add  [2,4] [4,5]    
+#     [2,3]  
+
+with open(r"C:\Users\Admin\Downloads\rosalind_tree.txt",'r') as f:
+    FL = f.readlines()
+N = int(FL[0].replace('\n',''))
+#data = [s.replace('\n','').split(' ') for s in FL[1:]]
+data = [[int(s.replace('\n','').split(' ')[0]),int(s.replace('\n','').split(' ')[1])] for s in FL[1:]]
+originData = np.array(data)
+AdjL = data.copy()
+
+def creatTr(L):
+    treeL = []
+    for t in L.copy():
+        print(set(t))
+        print('and',set(treeL))
+        if len(treeL)==0 and t not in treeL:
+            [treeL.append(titem) for titem in set(t)]
+            L.remove(t)
+        elif len(treeL)>0:
+            if len(set(t).intersection(set(treeL))) >0:
+                [treeL.append(s) for s in (set(t) - set(treeL))]
+                L.remove(t)
+    return L,treeL
+LIST = []
+if len(LIST) == 0:
+    data,treeL = creatTr(AdjL)
+    LIST.append(treeL)
+while len(AdjL) >0:
+    AdjL,treeL = creatTr(AdjL)
+    LIST.append(treeL)
+nodes = []
+for s in LIST:
+    if len(set(nodes).intersection(set(s)))== 0:
+        nodes += s
+n = len(set(nodes))
+
+N-n + len(LIST)-1
+
+N - len(originData)-1
