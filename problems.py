@@ -1502,3 +1502,89 @@ n = len(set(nodes))
 N-n + len(LIST)-1
 
 N - len(originData)-1
+
+#Catalan Numbers and RNA Secondary Structures
+RNA ='UGGCUAAUCAAUAUAUUAAUUAAUUAUGCGCGCGUACGUACCCGAGCCGUCUAGCGGAGAUCUCCGGCGGACGUCGUGCACGAUCCAUGAGUUCCGAUCCGCGGGCGUGUGCAAUCUCGAUAUAUAUAUCUAUACGGGCACGAAAGAUCUAUAAUAUCGCAGCUGCGCGUAUGUACAUGCUGCAGCUAUAUUCGAACGAGCUCGUUGCAUUAUAACAUGACAUGAUACUAGUGCAACGCGCGGAUCCGAAUAGAUCUUAUACAUGUAUCGUCUUAAGC'
+RNA= 'CGGCUGCUACGCGUAAGCCGGCUGCUACGCGUAAGC'
+#Pair = {'A':'U','U':'A','C':'G','G':'C'}
+#cPair = RNA[0]
+#nPair = 0
+def PRNA(string):
+    Pair = {'':1,'AU':1,'UA':1,'CG':1,'GC':1}
+    #if Pair[si] != string:
+    if string not in Pair:
+        nPair =0
+        for i in range(1,len(string),2):        
+            #if Pair[si] == string[i]:
+                #nPair += PRNA(string[1],string[2:i]) * PRNA(string[i+1],string[i+2:]) 
+#            print(string[0]+string[i])
+            if (string[0]+string[i]) in Pair.keys():
+                nPair += PRNA(string[1:i]) * PRNA(string[i+1:])
+#                print(string[0],string[1:i],nPair)
+        Pair[string] = nPair % 1000000
+    return Pair[string]
+
+print(PRNA(RNA))
+
+with open(r"C:\Users\Admin\Downloads\rosalind_cat.txt",'r') as f:
+    rf=f.readlines()
+RNA = ''.join(rf[1:]).replace('\n','')
+def PRNA(string,Pair):
+    #if Pair[si] != string:
+    nPair =0
+    if string not in Result.keys():
+        for i in range(1,len(string),2):        
+            #if string[0]+string[i] in Pair.keys():
+            print(string[0]+string[i])
+            if string[0]+string[i] in Pair.keys():
+                nPair += PRNA(string[1:i],Pair) * PRNA(string[i+1:],Pair) 
+                print (nPair)
+        Pair[string] = nPair
+        Result[string] = nPair
+    return Pair[string]
+
+Pair = {'':1,'AU':1,'UA':1,'CG':1,'GC':1}
+Result = {}
+print(PRNA(RNA,Pair) % 1000000)
+
+
+memorize = {} # 建立一个字典，存储已经出现过的字符串及不交叉完美匹配的数量
+memorize[''] = 1 # 如果序列为空，说明只有这一种情况
+
+def ismatch(c1, c2):
+    """判断是否碱基配对的函数"""
+
+    if (c1 == 'A' and c2 == 'U') or (c1 == 'U' and c2 == 'A') or \
+            (c1 == 'G' and c2 == 'C') or (c1 == 'C' and c2 == 'G'):
+        return 1
+    else:
+        return 0
+
+
+def noncross(seq):
+    """判断是否有不交叉的完美匹配"""
+
+    if seq in memorize.keys(): # 如果这段序列之前已经被分析过了，直接取出结果即可
+        return memorize[seq]
+
+    if len(seq) % 2 == 1: # 如果这个序列长度是奇数，不可能存在完美匹配
+        memorize[seq] = 0
+        return 0
+
+    if seq.count('A') != seq.count('U') or seq.count('G') != seq.count('G'): # 如果这个序列中配对的碱基数量不相同，不可能存在完美匹配
+        memorize[seq] = 0
+        return 0
+
+    i = 1
+    num = 0
+    while i < len(seq): # 在序列中搜索所有可以与第一个碱基配对的碱基
+        if ismatch(seq[0], seq[i]) == 1: # 如果第i个碱基配对
+            num += (noncross(seq[1:i]) * noncross(seq[i+1:])) # 去检验被第k个碱基分出的两个序列
+        i += 2 # 只需从第偶数个碱基中搜索
+    memorize[seq] = num # 记录这个序列的不交叉完美匹配结果
+
+    return num
+
+res = noncross(RNA)
+print(res % 1000000)
+
