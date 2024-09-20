@@ -1566,7 +1566,6 @@ def noncross(seq):
 
     if seq in memorize.keys(): # 如果这段序列之前已经被分析过了，直接取出结果即可
         return memorize[seq]
-
     if len(seq) % 2 == 1: # 如果这个序列长度是奇数，不可能存在完美匹配
         memorize[seq] = 0
         return 0
@@ -1588,3 +1587,70 @@ def noncross(seq):
 res = noncross(RNA)
 print(res % 1000000)
 
+#Error Correction in Reads
+
+with open(r"E:\Rosalind\Rosalind_52_rwsr.txt",'r+') as f:
+    rfs = f.readlines()
+
+with open(r"C:\Users\Admin\Downloads\rosalind_corr.txt",'r+') as f:
+    rfs = f.readlines()
+    
+sequence = []
+tmp=[]
+for lines in rfs:
+    if '>' not in lines:
+        #tmp.append(''.join(lines[0:lines.index('\n')]))
+        print(lines.replace('\n',''))
+        if '\n' in lines:
+            tmp.append(lines.replace('\n',''))
+        else:
+            tmp.append(lines)
+    else:
+        if tmp:
+            print(''.join(tmp))
+            sequence.append(''.join(tmp))
+            tmp = []
+    if lines == rfs[-1]:
+        sequence.append(''.join(tmp))
+
+def HammingD(s1,s2):
+    temp = [1 for i in range(len(s1)) if s1[i] != s2[i]]
+    return sum(temp)
+
+dictC = {'A':'T','T':'A','C':'G','G':'C'}
+oldr = []
+newr = []
+pair = []
+for s in sequence:
+#    [(oldr.append(s),newr.append(ss)) for ss in set(sequence)-set(s) if HammingD(s,ss)<=1]
+    CR = ''.join([dictC[si] for si in s][::-1])  
+    print(s,CR)                                                 
+#    [(oldr.append(ss),newr.append(CR)) for ss in set(sequence)-set(s) if HammingD(ss,CR)<=1]
+    pair.append([s,CR])
+    if pair.count(s) <2:
+        oldr.append(s)
+    else:
+        newr.append(s)
+for so in oldr:
+    for sn in newr:
+        if HammingD(so,sn)==1:
+            print(so+' -> '+sn)
+            break
+        if HammingD(so,''.join([dictC[si] for si in sn][::-1]))==1:
+            print(so+' -> '+''.join([dictC[si] for si in sn][::-1]))
+            break
+
+ref=[k for s in sequence for k in [s,''.join([dictC[si] for si in s][::-1])]] 
+old=[k for k in sequence if ref.count(k)<2] 
+new=[k for k in sequence if ref.count(k)>=2] 
+res=[] 
+for s in old: 
+    for t in new: 
+        if HammingD(s,t)==1: 
+            res.append(s+' -> '+t) 
+            print(res[-1])
+            break 
+        if HammingD(s,''.join([dictC[si] for si in t][::-1]))==1: 
+            res.append(s+ '-> '+''.join([dictC[si] for si in t][::-1])) 
+            print(res[-1])
+            break
