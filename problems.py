@@ -1627,10 +1627,8 @@ for s in sequence:
     print(s,CR)                                                 
 #    [(oldr.append(ss),newr.append(CR)) for ss in set(sequence)-set(s) if HammingD(ss,CR)<=1]
     pair.append([s,CR])
-    if pair.count(s) <2:
-        oldr.append(s)
-    else:
-        newr.append(s)
+oldr=[k for k in sequence if pair.count(k)<2] 
+newr=[k for k in sequence if pair.count(k)>=2] 
 for so in oldr:
     for sn in newr:
         if HammingD(so,sn)==1:
@@ -1647,10 +1645,25 @@ res=[]
 for s in old: 
     for t in new: 
         if HammingD(s,t)==1: 
-            res.append(s+' -> '+t) 
+            res.append(s+'->'+t) 
             print(res[-1])
             break 
         if HammingD(s,''.join([dictC[si] for si in t][::-1]))==1: 
-            res.append(s+ '-> '+''.join([dictC[si] for si in t][::-1])) 
+            res.append(s+ '->'+''.join([dictC[si] for si in t][::-1])) 
             print(res[-1])
             break
+        
+#
+n = 1306
+if n>4:
+    result = (2+n/2)*n/4/2
+else:
+    result = n/2
+print(result)
+
+n = 1306
+if n>3:
+    result = n-2
+else:
+    result = 0
+print(result)
