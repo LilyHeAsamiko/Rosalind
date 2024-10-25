@@ -1667,3 +1667,348 @@ if n>3:
 else:
     result = 0
 print(result)
+
+# k-Mer Composition
+from itertools import *
+string = 'CTTCGAAAGTTTGGGCCGAGTCTTACAGTCGGTCTTGAAGCAAAGTAACGAACTCCACGGCCCTGACTACCGAACCAGTTGTGAGTACTCAACTGGGTGAGAGTGCAGTCCCTATTGAGTTTCCGAGACTCACCGGGATTTTCGATCCAGCCTCAGTCCAGTCTTGTGGCCAACTCACCAAATGACGTTGGAATATCCCTGTCTAGCTCACGCAGTACTTAGTAAGAGGTCGCTGCAGCGGGGCAAGGAGATCGGAAAATGTGCTCTATATGCGACTAAAGCTCCTAACTTACACGTAGACTTGCCCGTGTTAAAAACTCGGCTCACATGCTGTCTGCGGCTGGCTGTATACAGTATCTACCTAATACCCTTCAGTTCGCCGCACAAAAGCTGGGAGTTACCGCGGAAATCACAG'
+with open(r"C:\Users\Admin\Downloads\rosalind_kmer.txt",'r') as f:
+    frl = f.readlines()
+string = ''.join(frl[1:]).replace('\n','')    
+k = 4
+skeys = [''.join(v) for v in product('ACGT',repeat=k)] 
+kmer = []
+kmers = []
+for s in skeys:
+    kmer.append(string.count(s))
+    n = 0
+    for si in range(len(string)-k+1):
+        if string[si:si+k].find(s)>=0:
+            n +=1
+    kmers.append(str(n))
+print(' '.join(kmers))
+
+
+#Speeding Up Motif Finding
+string = 'CAGCATGGTATCACAGCAGAG'
+with open(r"C:\Users\Admin\Downloads\rosalind_kmp.txt",'r') as f:
+    rf=f.readlines()
+string = ''.join(rf[1:]).replace('\n','')
+#[print(i) for i in enumerate(string)]
+#(0, 'C')
+#(1, 'A')
+#(2, 'G')
+#(3, 'C')
+#(4, 'A')
+#(5, 'T')
+#(6, 'G')
+#(7, 'G')
+#(8, 'T')
+#(9, 'A')
+#(10, 'T')
+#(11, 'C')
+#(12, 'A')
+#(13, 'C')
+#(14, 'A')
+#(15, 'G')
+#(16, 'C')
+#(17, 'A')
+#(18, 'G')
+#(19, 'A')
+#(20, 'G')
+result = []
+result.append(0)
+i = 0
+while i < len(string)-1:
+    fs = string[0:i+1]
+    bs = string[i+1:]
+    n =  min(len(fs),len(bs))    
+    commonn = 0
+    for j in range(1,n+1):        
+        if fs[0:j]== bs[0:j]:
+            commonn = j
+            result.append(commonn)
+        elif commonn > 0:
+            i = len(result)
+            if string[0] != string[i] and string[:i].find(string[i]) >=0:
+                idx=[si for si in range(len(string[:i])) if string[si]== string[i]]
+                print('idx',idx)
+                commonrn = 0
+                for ii in idx:                    
+                    for k in range(1,ii+1):
+#                        print(k,(ii,string[ii:ii-k-1:-1]),(i,string[i:i-k-1:-1]))                        
+                        #if string[ii:ii-k-1:-1] == string[i:i-k-1:-1]:
+                        if ii-k-1 >=0:
+#                            print('>',k,(ii,string[ii:ii-k-1:-1]),(i,string[i:i-k-1:-1]))                        
+                            if string[ii:ii-k-1:-1] == string[i:i-k-1:-1]:
+                                if k> commonrn:
+                                    commonrn = k 
+                            else:
+                                break
+#                            print(commonrn)
+                        else:
+#                            print('<',k,(ii,string[ii::-1]),(i,string[i:i-k-1:-1]))
+                            if string[ii::-1] == string[i:i-k-1:-1]:
+                                if k> commonrn:
+                                    commonrn = k 
+                            else:
+                                break
+#                            print(commonrn)
+#                print(commonrn)
+                if commonrn >1:
+                    result.append(commonrn+1)
+            else:
+                i = len(result)-1
+                commonn = 0
+                break
+        else:
+            result.append(commonn)
+            i = len(result)-1
+            break
+print(result,i,fs,bs,commonn)
+   
+'''
+m2
+'''     
+string = 'CAGCATGGTATCACAGCAGAG'
+with open(r"C:\Users\Admin\Downloads\rosalind_kmp.txt",'r') as f:
+    rf=f.readlines()
+string = ''.join(rf[1:]).replace('\n','')
+        
+def PRES(f,b):
+    n = min(len(f),len(b))
+    common = 0
+    for i in range(1,n+1):
+        if f[:i] == b[:i]:
+            common = i
+        elif f[:i] != b[:i] and common >0:
+            return common
+        else:
+            return 0 
+    return common
+            
+def SURFS(f,s):
+    idx = [si for si in range(len(f)) if s[si] == s[len(f)]]
+    common = 0
+    for ii in idx:
+        n = min(ii,len(f))
+        for i in range(1,n+1):
+            if f[ii:ii-i:-1] == s[len(f):len(f)-i:-1]:
+                if i > common:
+                    common = i
+#                print('test1',common)
+            elif f[ii:ii-i:-1] != s[len(f):len(f)-i:-1] and common>0:
+                break
+            else:
+                break
+#    print('test',common)
+    return common
+
+import time
+a=time.time()  
+result = [0]*len(string)
+idx = [si for si in range(1,len(string)) if string[si] == string[0]]
+for i in idx:
+    fs = string[0:i]
+    bs = string[i:]
+    c = PRES(fs,bs)
+    if result[i] == 0 and c > 0:
+        result[i:i+c] = range(1,c+1)
+        cb = SURFS(string[0:i+c],string)
+        if result[i+c] == 0 and cb >1:
+            result[i+c] = cb
+t= time.time()-a    
+#Out[99]: 11.05  
+
+
+a=time.time()  
+result = [0]*len(string)
+idx = [si for si in range(0,len(string)) if string[si] == string[0]]
+for i in range(1,len(idx)):
+    fs = string[0:idx[i]]
+    bs = string[idx[i]:]
+    pc = c
+    c = PRES(fs,bs)
+#    print(len(result),idx[i],result[idx[i]],c)
+    if result[idx[i]] == 0 and c > 0:        
+#        print(i,c,idx[i],idx[i]+c,result[idx[i]:idx[i]+c])
+        result[idx[i]:idx[i]+c] = range(1,c+1)
+#        print(result)
+    elif result[idx[i]] > 0 and c > 0:
+#        print(i,c,idx[i],idx[i-1])
+#        print(i,pc,idx[i-1]+pc)
+#        print(i,idx[i]+c)
+#        print(i,c,idx[i-1]+pc,idx[i]+c,result[idx[i-1]+pc:idx[i]+c],list(range(c-(idx[i-1]+pc-1-idx[i]-1),c+1)))
+        result[idx[i-1]+pc:idx[i]+c] = range(c-(idx[i-1]+pc-1-idx[i]-1),c+1)
+        #print(result)        
+print(result)
+R = ''
+#[R+str(r) for r in result]
+for r in result:
+    R += str(r)+' '
+print(R)
+t= time.time()-a    
+[print(r) for r in result]
+
+a = time.time()
+result = [0]*len(string)
+longest_motif_length = 0 
+for i in range(1, len(string)):
+    for j in range(1, len(string)-i+1):
+        if string[:i] == string[j:j+i]:
+            result[j+i-1] = len(string[:i])
+            longest_motif_length = len(string[:i])
+            # print(i, j)
+
+    if longest_motif_length < len(string[:i]):
+        break
+    
+print(' '.join(map(str, result)))
+t = time.time()-a
+
+import threading
+a = time.time()  
+result = [0]*len(string)
+#thread = threading.Thread(target=PRES,args=[fs,bs,])
+idx = [si for si in range(1,len(string)) if string[si] == string[0]]
+for i in idx:
+    fs = string[0:i]
+    bs = string[i:]
+    c = threading.Thread(target=PRES,args=[fs,bs,]).start()
+    if result[i] == 0 and c > 0:
+        result[i:i+c] = range(1,c+1)
+        if c >0:
+            cb = threading.Thread(target=SURFS,args=[string[0:i+c],string,]).start()
+        if result[i+c] == 0 and cb >1:
+            result[i+c] = cb
+t= time.time()-a    
+
+ 
+
+import asyncio
+async def my_coroutine():
+    result = [0]*len(string)
+    idx = [si for si in range(1,len(string)) if string[si] == string[0]]
+    for i in idx:
+        fs = string[0:i]
+        bs = string[i:]
+        c = PRES(fs,bs)
+        if result[i] == 0 and c > 0:
+            result[i:i+c] = range(1,c+1)
+            if c >0:
+                cb = SURFS(string[0:i+c],string)
+            if result[i+c] == 0 and cb >1:
+                result[i+c] = cb
+a=time.time()  
+asyncio.create_task(my_coroutine())
+t= time.time()-a    
+
+
+async def pres(f,b):
+    n = min(len(f),len(b))
+    common = 0
+    for i in range(1,n+1):
+        if f[:i] == b[:i]:
+            common = i
+        elif f[:i] != b[:i] and common >0:
+            return common
+        else:
+            return 0 
+    return common
+            
+async def surfs(f,s):
+    idx = [si for si in range(len(f)) if string[si] == s[len(f)]]
+    common = 0
+    for ii in idx:
+        n = min(ii,len(f))
+        for i in range(1,n+1):
+            if f[ii:ii-i:-1] == s[len(f):len(f)-i:-1]:
+                if i > common:
+                    common = i
+#                print('test1',common)
+            elif f[ii:ii-i:-1] != s[len(f):len(f)-i:-1] and common>0:
+                break
+            else:
+                break
+#    print('test',common)
+    return common 
+
+s1='AACCTTGG'
+s2='ACACTGTGA' 
+s1 = 'CAACATCGCAATTGCGGGCGACTTGCACAGGGATTCCGCTTGAGGTGTCATCATCCTGATAGGAGTGCCAGTGCTTGCGAAGTTAGTACTACATGGAATTTCTAATGTCGTTGTCCCAGGTGCGGATGTCCAAGCATCTTAAGTAAGAGTCGATATACGCTACAGGGTCCCTGTCGCAGTTATCTCCAGACAGTCATCGAGGCATCGGTAAAACTCTTAGTTGGAAGGCATATAGGAGTGTAAACCTCCTCCGGATGTCTCCACTGATTGGGCGATGAGCCGGCCGAAGATCTCGCACCATCCCGTGGTTGTGTGCAAAGTTGGTACGGGATCTATTGGGGCAGACGCCGGCGATGCGCGTTGTAGGGTCACGCTGACGACGAAAGCCGCTGCTCAGCCGAGTTAATGCGTTGCTACATCCTCTCATATCAGGACCCATGTGTTCTCGCTTACCAGCCGATATCTAAAATAAGTTATGGAGTTTAAGGATGGCGCAAGGATAGAATTGATCTATCTTTTCTCCTTTGGACATGGCGGGAGATGTGATTCCAGGTTTAGAAGCGGACCTGCAGAATGCCGCGTTTCTTGTAGTTCATAGTTTAATTTATACTCTCTAGGATTGACCGGGCACATCACCGAAGAGGTCACGCCAACTGACCCGATGGCTCTCCGGGTAGGCTGGTGAGGATGCGCCCCGCATTGAGGTCAACGTGTGGTGGTTAGTTGATACACAAATCCCACCTCCAGATGTAGGCTTCCACAAGAAGTGCATTTCACTCTAAGCACTAGGGAGCGTGTTATGTTGAGACTGCGGGTATCGTATATGGGTACTAGGGTTTTACTTCCGTCGACCCGATGTGAGCCTAGAGACGCTCCTTCGGATTTTAAAGATTGAGCTCAAGAAGGGCGCTACAGGCACTACAGAGGGGCGTGTCCGACCCGTTGAGCGAAGTTTGGAAGACAATTATCAGACTAGGAGGTAGCATACCTGGCAGT'
+s2 = 'TTAACTACAGTTTCATCGTTCCTCGGTCTTTGTAACGGATCATGACAACTTAGGATTGTGTGAACCAGGTGATCAGCTGGGTGTGCACAACGCGCGGTAGAACTAACCTGCTTCGCAGACGCGCCTCATTAGGGTTAAGCCTAAACTTCCAATCTCGTAGAGACAGTTTTCTAGCGCCACTCCTCACCTGTGTTGGGATAGGTTACCATCCATGGGTTATTTCTCCACTGAAGATTCGTAAATGAATAGGGTAGCCCTGTCCGGTTCGCAAATCATAGCTTGAACTTGGACAAGAGTCGCTTATATTGTACTACGAGCAAAGCGGTGCACTAGGGGGCGTTGAGAAGACATTGTGCCTATACAGACTTTCTCAGGAAGACAGCCTGTAACCGGCCTTAGGGCCCGTTGCCACCTAAAATGTCGGATTATTGCAACGTTTCACGTTTGGCCATAGGCGTGACGTTTCTTGCCGGTGCCTTTGATCTTCAGGTGTCGGGATAATCGTTACCCTCCGATAGCGCCGGGAGGTCACGCTCTTCCTAAATAAGGACTGAATGTGAGCAATTCTTAAGGACCAAAAACGTTCGCCTCCCTCTCAGATGCTGAGTCAACTACTAGATGTCGGGAACATACAACGCAGTGAGTTATCGCGAAATGTAGACCCCCCCGTTAGGATGCAGTAGATTACCTAACTCCCCTTTCAGGTTTACAACCTCCTCTAATTTCCCGGCTTGTTTGCATTAAGAAGGAGTCCTTCCGGGTTTCGAGCAATTTAAGGTGATAGGCCCACTAACCTCAAATAGCGATGGCTCCCATCATCTGATTAAACGGACTCCCTGAGTACCGTGTGATGATTTTGACACAAAATTCGAGCAAGGTGTGCCGCTGGTGTAAGGGGGACGTCACGCGCCATGTCTCACGCAAATATCCGGCACTCAACCCGCGACAACATGAGA'
+
+ss = [s for s in s2]
+result = []
+si = 0 
+sj = 0
+while si < len(s1)-1:
+    #if s in ss:   
+    if ss[sj:].find(s1[si])<0:
+        si += 1
+    while sj < len(ss):
+        if s1[si] == ss[sj]:
+            result.append(s1[si])
+            sj += 1
+            break
+        sj += 1
+    si += 1
+print(''.join(result))
+
+while si < len(ss)-1:
+    #if s in ss:   
+    if s1[sj:].find(ss[si])<0:
+        si += 1
+    while sj < len(s1):
+        if ss[si] == s1[sj]:
+            result.append(ss[si])
+            sj += 1
+            break
+        sj += 1
+    si += 1
+print(''.join(result))
+#jubuzuiyou
+#dynamic matrix！！！！！
+s = s1
+t = s2
+
+lengths = [[0 for j in range(len(t) + 1)] for i in range(len(s) + 1)]
+for i, x in enumerate(s):
+    for j, y in enumerate(t):
+        if x == y:
+            lengths[i + 1][j + 1] = lengths[i][j] + 1
+        else:
+            lengths[i + 1][j + 1] = max(lengths[i + 1][j], lengths[i][j + 1])
+
+spliced_motif = ''
+x, y = len(s), len(t)
+while x * y != 0:
+    if lengths[x][y] == lengths[x - 1][y]:
+        x -= 1
+    elif lengths[x][y] == lengths[x][y - 1]:
+        y -= 1
+    else:
+        spliced_motif = s[x - 1] + spliced_motif
+        x -= 1
+        y -= 1
+print(spliced_motif)
+
+async def main():
+    result = [0]*len(string)
+    idx = [si for si in range(1,len(string)) if string[si] == string[0]]
+    for i in idx:
+        fs = string[0:i]
+        bs = string[i:]
+        #c = await PRES(fs,bs)
+        ctsk = asyncio.create_task(pres(fs,bs))
+        c = await ctsk
+        if result[i] == 0 and c > 0:
+            result[i:i+c] = range(1,c+1)
+            if c >0:
+                #cb = await SURFS(string[0:i+c],string)
+                cbtsk = asyncio.create_task(surfs(string[0:i+c],string))
+                cb = await cbtsk
+            if result[i+c] == 0 and cb >1:
+                result[i+c] = cb
+a=time.time()  
+asyncio.run(main())
+t= time.time()-a    
