@@ -2011,4 +2011,308 @@ async def main():
                 result[i+c] = cb
 a=time.time()  
 asyncio.run(main())
-t= time.time()-a    
+t= time.time()-a  
+  
+#Ordering Strings of Varying Length Lexicographically
+import numpy as np
+seq = ['D','N','A']
+n = len(seq)
+result = []
+def AS0(String):
+    result = []
+    for n in range(len(String)):
+        result.append(list(String[n]*(len(String)+1)))
+    return result
+def AS1(String):
+    result = []
+    result.append('')
+    for n in range(len(String)):
+        result.append(String[n])
+    return list(result)
+def AS(String):
+    result = []
+    for n in range(len(String)):
+        result.append(list(String[n]*(len(String)+1)))
+        temp = []
+        temp.append('')
+        for n in range(len(String)):
+            temp.append(String[n])
+        result.append(temp)
+    return result
+def Iters(string):
+    result = []
+    n = len(string)
+    temp = list(itertools.permutations(string, n-1))
+    [temp.append((t,t)) for t in string]
+    Temp = [list(t) for t in temp]
+    temps = string.copy()
+    temps.append('')
+    for m in range(len(string)):
+        t0 = list(string[m]+''*(n-1))
+        result.append(t0)
+    for t in Temp:
+        for ti in temps:
+            print(t,ti)
+            #tj = t.append(ti)
+            tj = []
+            for titem in t:
+                tj.append(titem)
+            print(tj)
+            tj.append(ti)
+            result.append(tj)
+    return result
+SEQ = seq.copy()
+SEQ.insert(0,'')
+def compare(x,y):
+    n = min(len(x),len(y))
+    print('n',n)
+    for i in range(n):
+        if ''.join(SEQ).find(str(x[i]))<''.join(SEQ).find(str(y[i])):
+            print('r',x,y,i,-1)
+            return -1
+        elif ''.join(SEQ).find(str(x[i]))>''.join(SEQ).find(str(y[i])):
+            print('r',x,y,i,1)
+            return 1
+        else:
+            if n==1:
+                if len(x) < len(y):
+                    print('r',x,y,i,-1)
+                    return -1
+                elif len(x) > len(y):
+                    print('r',x,y,i,1)
+                    return 1
+            elif n>1:
+                compare(x[i+1:],y[i+1:])
+ii=Iters(string)   
+from functools import cmp_to_key 
+sorted(ii,key=cmp_to_key(compare))
+
+def Iter(string):
+    n = len(string)
+    if n > 2:
+        temp = list(itertools.permutations(string, n-1))
+        [temp.insert(n*(n-i-1),(string[n-i-1],string[n-i-1])) for i in range(n)]
+        Temp = [list(t) for t in temp]
+        temps = string.copy()
+        temps.insert(0,'')
+        result = []    
+        for t in enumerate(Temp):
+            for ti in temps:
+                print(t,ti)
+                #tj = t.append(ti)
+                tj = []
+                for titem in t[1]:
+                    tj.append(titem)
+                print(tj)
+                tj.append(ti)
+                result.append(tj)
+        for m in range(len(string)):
+            tp = []
+            tp.append(string[n-m-1])
+            for mm in range(n-1):
+                tp.append('')
+            result.insert((n-m-1)*(n+1)*n,tp) 
+    else:
+        temp = list(itertools.permutations(string, n-1))
+        Temp = [list(t) for t in temp]
+        temps = string.copy()
+        temps.insert(0,'')
+        result = []
+        for t in enumerate(temp):
+            for ti in temps:
+                print(t,ti)
+                #tj = t.append(ti)
+                tj = []
+                tj.append(t[1][0])
+                print(tj)
+                tj.append(ti)
+                result.append(tj)              
+    return result
+
+import itertools
+itertools.combinations_with_replacement(seq, 2)
+for i in range(n):
+    result.append(seq[i])
+    for j in range(n+1):
+        result.append(seq[s]*(n+1)*n)
+    temps = []
+    for ss in range(n):
+        temps.append(seq[ss]*(n+1))
+    result.append(temps[:])
+    tempss = []
+    for sss in range(n):
+        tempss.append(seq[sss])
+        tempss.append('')
+    result.append(tempss*n)
+
+'''
+D
+DD
+DN
+N
+ND
+NN
+
+                  3*1*2  3*1*2     3*2=6
+          4*1*3+1 4*1*3  4*1*3     (4*3+1)*3=39
+  5*1*4   5*1*4   5*4+1  (5*4+1)*4 ((5*4+1)*4+1)*4=340
+
+D
+DD
+DDD
+DDDD
+DDDN
+DDDA
+DDDR
+DDN
+DDND
+DDNN
+DDNA
+DDNR
+DDA
+DDAD
+DDAN
+DDAA
+DDAR
+DDR
+DDRD
+DDRN
+DDRA
+DDRR
+DN
+DND
+DNDD
+DNDN
+DNDA
+DNDR
+DNN
+DNND
+DNNN
+DNNA
+DNNR
+DNA
+DNAD
+DNAN
+DNAA
+DNAR
+DNR
+DNRD
+DNRN
+DNRA
+DNRR
+...
+...
+...
+(((n+1)*n+1)*n+1)*n   (n+1)*n+1 iter n-1 times
+'''
+def COLUMN(string,m):
+#    result = []
+    ctemp0 = np.array(string*(m+1)).reshape(m+1,len(string)).transpose().flatten()
+#    ctemp = list(ctemp0).copy() 
+#    result.append(ctemp)
+#    return result
+    return ctemp0
+ 
+import numpy as np
+#import itertools
+#import pandas as pd
+sss='D N A R C'
+S= sss.split(' ')
+S = ['C', 'Z', 'R', 'G', 'Q', 'T', 'N', 'H', 'B', 'V', 'I', 'O']
+N=4
+#seqs=itertools.combinations(S, N)
+#result = []
+#for s in seqs:
+seq = list(S)
+strings = seq.copy()
+strings.insert(0,'*')
+n =len(seq)
+Ri = strings
+for i0 in range(N-2):
+    R0=list(Ri*n)    
+    R0.insert(0,'*')
+    Ri = R0
+
+R = []
+#R.append(np.array(R0).reshape((n+1)*n+1,1))
+R.append(np.array(Ri*n).flatten())
+R = list(R)
+ #   print(np.array(Ri*n).flatten())
+ #   print(len(Ri*n))
+s0=seq
+mm = n
+for i in range(N-1): 
+    #r = COLUMN(seq,mm).reshape((mm+1)*n,1)
+    r = list(COLUMN(seq,mm))
+    mm = len(r)
+    print(mm,i,r)
+    if i < N-2:
+        for ii in range(i,N-2):
+            r.insert(0,'*')
+            r = r*n
+        #R.insert(0,np.array(r*n).flatten())
+    R.insert(0,np.array(r).flatten())
+#       print(np.array(r).flatten())
+    #s0=r    
+    
+#temp = np.array(R).transpose()
+#    print(temp)
+#if len(result) == 0:
+#    result = pd.DataFrame(temp) 
+#        print(result)
+#else:
+#    result = np.concatenate([result,temp],axis=0)
+#Result=pd.DataFrame(result).drop_duplicates()
+#print(Result)
+[print(str(''.join(row)).replace('*','')) for row in np.array(R).transpose()]
+            
+#
+'''
+sss='D N A R C'
+S= sss.split(' ')
+#S = ['C', 'Z', 'R', 'G', 'Q', 'T', 'N', 'H', 'B', 'V', 'I', 'O']
+ids = list(enumerate(S))
+k=4
+Result =[]
+idx =[]
+stps=[]
+seqs = itertools.combinations(S,k)
+for s in seqs:
+    result = list(itertools.product(s,repeat = 1))
+    m0 = len(result) #4
+    init = m0
+    for j in range(2,k+1):
+        temp = list(itertools.product(s,repeat = j))
+        mj = len(temp) #16 64 256 
+        stp = int(mj/m0) #4 fixed
+        if j ==3:
+           for m in range(k):
+#            for m in range(j-1):
+                for i in range(init,init-k,-1):  
+                    [idx.append(int(i+ii-m*(k+1))) for ii in range(stp)]#20212223 19202122 18192021 17181920  15161718...  10...  5678 4567 3456 2345
+                    [stps.append(int(mj-(m*k+(1-k**(j-1))/(1-k)*k+1-i)*stp+ii)) for ii in range(stp)]#60616263 56575858 52... 48...   44454647 40... 36... 32...  28..
+                    [result.insert(int(i+ii-m*(k+1)),temp[int(mj-(m*k+(1-k**(j-1))/(1-k)*k+1-i)*stp+ii)]) for ii in range(stp)]             
+        elif j>3: 
+           for n in range(j,j+k*(j-3)):
+                for m in range(k):
+    #            for m in range(j-1):
+                    for i in range(init,init-k,-1):  
+    #                [idx.append(i+ii-m*(k+1)) for ii in range(stp)]#20212223 19202122 18192021 17181920  15161718...  10...  5678 4567 3456 2345
+    #                [stps.append((i-m*k)*stp-stp+ii) for ii in range(stp)]#60616263 56575858 52... 48...   44454647 40... 36... 32...  28..
+    #                [result.insert(i+ii-m*(k+1),temp[(i-m*k)*stp-stp+ii]) for ii in range(stp)]            
+                        [idx.append(int(i+ii-m*(k+1)-(n-j)*init/k)) for ii in range(stp)]#20212223 19202122 18192021 17181920  15161718...  10...  5678 4567 3456 2345
+                        [stps.append(int(mj-((n-j)*k*k+m*k+(1-k**(j-1))/(1-k)*k+1-i)*stp+ii)) for ii in range(stp)]#60616263 56575858 52... 48...   44454647 40... 36... 32...  28..
+                        [result.insert(int(i+ii-m*(k+1)-(n-j)*init/k),temp[int(mj-((n-j)*k*k+m*k+(1-k**(j-1))/(1-k)*k+1-i)*stp+ii)]) for ii in range(stp)]            
+        else:
+            for i in range(m0,0,-1):  
+                [idx.append(i+ii) for ii in range(stp)]#4567 3456 2345 1234
+                [stps.append(i*stp-stp+ii) for ii in range(stp)]#12131415 891011 4567 0123
+                [result.insert(i+ii,temp[i*stp-stp+ii]) for ii in range(stp)]            
+        m0 = len(temp) #9
+        init = len(result) #(（1-q**n）/(1-q)) = init/k    q=k
+    Result.append(result)
+            
+R = pd.DataFrame(np.concatenate(Result)).drop_duplicates()
+for row in Result:
+    print(''.join(row))
+'''
