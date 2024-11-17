@@ -2144,127 +2144,6 @@ for i in range(n):
         tempss.append(seq[sss])
         tempss.append('')
     result.append(tempss*n)
-
-'''
-D
-DD
-DN
-N
-ND
-NN
-
-                  3*1*2  3*1*2     3*2=6
-          4*1*3+1 4*1*3  4*1*3     (4*3+1)*3=39
-  5*1*4   5*1*4   5*4+1  (5*4+1)*4 ((5*4+1)*4+1)*4=340
-
-D
-DD
-DDD
-DDDD
-DDDN
-DDDA
-DDDR
-DDN
-DDND
-DDNN
-DDNA
-DDNR
-DDA
-DDAD
-DDAN
-DDAA
-DDAR
-DDR
-DDRD
-DDRN
-DDRA
-DDRR
-DN
-DND
-DNDD
-DNDN
-DNDA
-DNDR
-DNN
-DNND
-DNNN
-DNNA
-DNNR
-DNA
-DNAD
-DNAN
-DNAA
-DNAR
-DNR
-DNRD
-DNRN
-DNRA
-DNRR
-...
-...
-...
-(((n+1)*n+1)*n+1)*n   (n+1)*n+1 iter n-1 times
-'''
-def COLUMN(string,m):
-#    result = []
-    ctemp0 = np.array(string*(m+1)).reshape(m+1,len(string)).transpose().flatten()
-#    ctemp = list(ctemp0).copy() 
-#    result.append(ctemp)
-#    return result
-    return ctemp0
- 
-import numpy as np
-#import itertools
-#import pandas as pd
-sss='D N A R C'
-S= sss.split(' ')
-S = ['C', 'Z', 'R', 'G', 'Q', 'T', 'N', 'H', 'B', 'V', 'I', 'O']
-N=4
-#seqs=itertools.combinations(S, N)
-#result = []
-#for s in seqs:
-seq = list(S)
-strings = seq.copy()
-strings.insert(0,'*')
-n =len(seq)
-Ri = strings
-for i0 in range(N-2):
-    R0=list(Ri*n)    
-    R0.insert(0,'*')
-    Ri = R0
-
-R = []
-#R.append(np.array(R0).reshape((n+1)*n+1,1))
-R.append(np.array(Ri*n).flatten())
-R = list(R)
- #   print(np.array(Ri*n).flatten())
- #   print(len(Ri*n))
-s0=seq
-mm = n
-for i in range(N-1): 
-    #r = COLUMN(seq,mm).reshape((mm+1)*n,1)
-    r = list(COLUMN(seq,mm))
-    mm = len(r)
-    print(mm,i,r)
-    if i < N-2:
-        for ii in range(i,N-2):
-            r.insert(0,'*')
-            r = r*n
-        #R.insert(0,np.array(r*n).flatten())
-    R.insert(0,np.array(r).flatten())
-#       print(np.array(r).flatten())
-    #s0=r    
-    
-#temp = np.array(R).transpose()
-#    print(temp)
-#if len(result) == 0:
-#    result = pd.DataFrame(temp) 
-#        print(result)
-#else:
-#    result = np.concatenate([result,temp],axis=0)
-#Result=pd.DataFrame(result).drop_duplicates()
-#print(Result)
-[print(str(''.join(row)).replace('*','')) for row in np.array(R).transpose()]
             
 #
 '''
@@ -2288,7 +2167,6 @@ for s in seqs:
         if j ==3:
            for m in range(k):
 #            for m in range(j-1):
-                for i in range(init,init-k,-1):  
                     [idx.append(int(i+ii-m*(k+1))) for ii in range(stp)]#20212223 19202122 18192021 17181920  15161718...  10...  5678 4567 3456 2345
                     [stps.append(int(mj-(m*k+(1-k**(j-1))/(1-k)*k+1-i)*stp+ii)) for ii in range(stp)]#60616263 56575858 52... 48...   44454647 40... 36... 32...  28..
                     [result.insert(int(i+ii-m*(k+1)),temp[int(mj-(m*k+(1-k**(j-1))/(1-k)*k+1-i)*stp+ii)]) for ii in range(stp)]             
@@ -2316,3 +2194,45 @@ R = pd.DataFrame(np.concatenate(Result)).drop_duplicates()
 for row in Result:
     print(''.join(row))
 '''
+#Maximum Matchings and RNA Secondary Structures
+
+string ='AUGCUUC'
+string ='AUAAAUGCCCUUUGGCGAAUCCUACAAGACUUGUGUCAGGAUCCCUCAAGAUAAAUGCCAAGGAAAUGGGCUGCUCCCCUCUAUAGACGUCAG'
+def factorial(N):
+    if N == 0 or N == 1:
+        return 1
+    elif N >1:
+        return N*factorial(N-1)
+nA=string.count('A')
+nU=string.count('U')
+nG=string.count('G')
+nC=string.count('C')
+result = 1
+if Na*Nu*Ng*Nc >0:
+    minAU = min(nA,nU)
+    maxAU = max(nA,nU)
+    minCG = min(nC,nG)
+    maxCG = max(nC,nG)
+    while minAU > 0:
+        result *= maxAU
+        maxAU -= 1
+        minAU -= 1
+    while minCG > 0:
+        result *= maxCG
+        maxCG -= 1
+        minCG -= 1
+    print('1:',result)
+
+def MINMAX(N,n):
+    result=1    
+    if N*n >0:
+        minN = min(N,n)
+        maxN = max(N,n)
+        if minN == maxN:
+            result = factorial(maxN)
+        else:
+            result = factorial(maxN)/factorial(maxN-minN)
+    print('2:',result)
+    return result
+
+MINMAX(nA,nU)*MINMAX(nC,nG)
