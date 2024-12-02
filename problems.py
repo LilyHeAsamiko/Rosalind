@@ -2236,3 +2236,37 @@ def MINMAX(N,n):
     return result
 
 MINMAX(nA,nU)*MINMAX(nC,nG)
+
+#Creating a Distance Matrix
+rfs = ['>Rosalind_9499\n','TTTCCATTTA\n','>Rosalind_0942\n','GATTCATTTC\n','>Rosalind_6568\n','TTTCCATTTT\n','>Rosalind_1833\n','GTTCCATTTA\n']
+
+
+with open(r"C:\Users\Admin\Downloads\rosalind_pdst.txt",'r') as f:
+    rfs=f.readlines()
+sequence = []
+tmp=[]
+for lines in rfs[1:]:
+    if '>Rosalind_' not in lines:
+        #tmp.append(''.join(lines[0:lines.index('\n')]))
+        print(lines.replace('\n',''))
+        tmp.append(lines.replace('\n',''))
+        if lines == rfs[-1]:
+            sequence.append(''.join(tmp))
+    else:
+        if tmp:
+            print(''.join(tmp))
+            sequence.append(''.join(tmp))
+            tmp = []
+
+import numpy as np
+n=len(sequence)
+D=np.zeros((n,n))
+m=len(sequence[0])
+for i in range(n-1):
+    for j in range(i+1,n):
+        D[i][j] = round(len([(sequence[i][t],sequence[j][t]) for t in range(m) if sequence[i][t]!=sequence[j][t]])/m,5)
+        D[j][i] = D[i][j]
+[[format(ll,'.5f') for ll in row] for row in D]
+DM = np.array([[format(ll,'.5f') for ll in row] for row in D],dtype=float).reshape(n,n)
+np.set_printoptions(precision=5)
+print(np.around(DM,5))
