@@ -2402,3 +2402,32 @@ if __name__ == __main__: # 决定以下代码是否需要运行
          distances.append(get_reversal_distance(t, s))
  
      print(''.join(map(str, distances))) # 结果
+    
+#More Random Motifs
+N = 90000
+p = 0.6
+s = 'ATAGCCGA'
+import numpy as np
+import itertools
+import math
+n = int(np.floor(len(s)*p))
+temp = list(itertools.permutations(range(len(s)),n))
+tempCG = list(itertools.permutations(range(n),int(n/2)))
+tempAT = list(itertools.permutations(range(len(s)-n),int((len(s)-n)/2)))
+'''(1+2+...+N)/(len(temp)*len(tempCG)*len(tempAT)*N)'''
+(1+N)*N/2/(len(temp)/len(list(itertools.permutations(range(len(s)))))*len(tempCG)/len(list(itertools.permutations(range(n))))*len(tempAT)/len(list(itertools.permutations(range(n))))*N)
+m = (math.comb(len(s),n)*math.comb(int(n),int(n/2))*(2**(len(s)-n)))
+mmm = math.comb(len(s),n)*math.comb(int(n),int(n/2))*2*(2**(len(s)-n))
+1-math.comb(mmm-1+N-1,mmm-1-1)/math.comb(mmm+N-1,mmm-1)  
+'''def randomStrings(s, A):
+        n = s.count("G") + s.count("C")
+        return([(len(s)-n)*log10(1-gc) + n*log10(gc) - len(s)*log10(2) for gc in A])'''
+N = 89885 
+p = 0.501820
+s= 'TCTAACGT'
+
+AT = s.count('A')+s.count('T')
+CG = s.count('C')+s.count('G')
+prob = ((1-p)/2)**AT*((p/2)**CG)
+P = 1-(1-prob)**N
+print(round(P,3))
