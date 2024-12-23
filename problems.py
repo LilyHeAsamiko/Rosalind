@@ -2272,6 +2272,7 @@ np.set_printoptions(precision=5)
 print(np.around(DM,5))
 
 
+
 #Reversal Distance
 import numpy as np
 import itertools
@@ -2431,3 +2432,8 @@ CG = s.count('C')+s.count('G')
 prob = ((1-p)/2)**AT*((p/2)**CG)
 P = 1-(1-prob)**N
 print(round(P,3))
+
+#Counting Subsets
+import numpy as np    
+m = 907  
+print(np.mod(2**m,1000000))
