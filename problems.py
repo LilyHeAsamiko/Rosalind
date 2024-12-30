@@ -2437,3 +2437,28 @@ print(round(P,3))
 import numpy as np    
 m = 907  
 print(np.mod(2**m,1000000))
+#Introduction to Alternative Splicing
+import numpy as np
+def fact(k):
+    if k == 1:
+        return 1
+    while k>1:
+        f,k = k*(k-1),k-1
+    return f
+def sf(n,m):
+    s = 0
+    while m<n:
+        print(s)
+        s,m = s+fact(n)/fact(n-m)/fact(m),m+1
+    return s+1
+a=3
+n=6
+print(np.mod(sf(n,a),1000000))
+n=1725
+a=1272
+import math
+ss = 0
+for b in range(a,n+1):
+    temp = math.comb(n,b)
+    ss += temp
+print(np.mod(ss,1000000))
