@@ -162,6 +162,12 @@ CMtrix = []
 GMtrix = []
 AMtrix = []
 TMtrix = []
+print('G: '+' '.join([str(s) for s in GMtrix]))
+print('T: '+' '.join([str(s) for s in TMtrix]))
+#Mortal Fibonacci Rabbits
+'''Recall the definition of the Fibonacci numbers from “Rabbits and Recurrence Relations”, which followed the recurrence relation Fn=Fn−1+Fn−2'''
+'''and assumed that each pair of rabbits reaches maturity in one month and produces a single pair of offspring (one male, one female) each subsequent month.'''
+'''Our aim is to somehow modify this recurrence relation to achieve a dynamic programmi
 tmpS = []
 DNA = []
 Consensus = []
@@ -188,13 +194,7 @@ for i in range(1,len(rf)+1):
             tmpS = []            
 print(''.join(Consensus))
 print('A: '+' '.join([str(s) for s in AMtrix]))
-print('C: '+' '.join([str(s) for s in CMtrix]))
-print('G: '+' '.join([str(s) for s in GMtrix]))
-print('T: '+' '.join([str(s) for s in TMtrix]))
-#Mortal Fibonacci Rabbits
-'''Recall the definition of the Fibonacci numbers from “Rabbits and Recurrence Relations”, which followed the recurrence relation Fn=Fn−1+Fn−2'''
-'''and assumed that each pair of rabbits reaches maturity in one month and produces a single pair of offspring (one male, one female) each subsequent month.'''
-'''Our aim is to somehow modify this recurrence relation to achieve a dynamic programming solution in the case that all rabbits die out after a fixed number of months.'''
+print('C: '+' '.join([str(s) for s in CMtrix]))ng solution in the case that all rabbits die out after a fixed number of months.'''
 m = 89
 dm = 17
 c = 1
@@ -2518,3 +2518,15 @@ def st(s, t):
 res = []
 res = st(s, t)
 print(int(res))
+
+#Expected Number of Restriction Sites
+def eval(path):
+    with open(path) as f:
+        n = int(f.readline())
+        s = f.readline()[:-1]
+        r = [float(i) for i in f.readline().split()]
+    print(n,s,r)
+    return [round(prob(s,a)*(n-len(s)+1),3) for a in r]
+def prob(s,a):
+    return (((1-a)/2)**(s.count('T')+s.count('A'))*(a/2)**(s.count('T')+s.count('A')))
+print(eval(r'C:\Users\Admin\Downloads\rosalind_eval.txt'))
